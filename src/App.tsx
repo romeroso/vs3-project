@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import Navigation from './components/common/Navigation';
 import Dashboard from './pages/Dashboard';
 import Activity from './pages/Activity';
@@ -19,15 +20,18 @@ function App() {
     });
 
     // Listen for auth changes
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <AuthForm onSuccess={() => {}} />
+        <Toaster position="top-center" />
       </div>
     );
   }
@@ -55,6 +59,7 @@ function App() {
       <main className="flex-1 pt-16 sm:pt-6 pb-6 sm:ml-64 px-4 sm:px-6">
         {renderPage()}
       </main>
+      <Toaster position="top-center" />
     </div>
   );
 }
